@@ -1,0 +1,23 @@
+.listener-box {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  margin-top: 10px;
+  padding: 7px;
+  position: relative;
+
+  &:hover {
+    border-color: #1677ff;
+
+    .listener-close {
+      display: block;
+    }
+  }
+
+  .listener-close {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    z-index: 1;
+    display: none;
+  }
+}
