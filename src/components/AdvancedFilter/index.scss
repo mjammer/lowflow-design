@@ -1,0 +1,72 @@
+.filter-container {
+  background-color: #fff;
+  border-radius: 3px;
+  display: flex;
+
+  .logical-operator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    min-width: 60px;
+    padding-right: 5px;
+
+    .logical-operator__line {
+      position: absolute;
+      left: calc(32% - 1px);
+      width: 30px;
+      border-width: 1px 0 1px 1px;
+      border-top-style: solid;
+      border-bottom-style: solid;
+      border-left-style: solid;
+      border-top-color: #dcdfe6;
+      border-bottom-color: #dcdfe6;
+      border-left-color: #dcdfe6;
+      border-image: initial;
+      border-right-style: initial;
+      border-right-color: initial;
+      border-radius: 5px 0 0 5px;
+      height: calc(100% - 48px);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateX(100%) translateY(-50%);
+        width: 6px;
+        height: 6px;
+        border: 1px solid #dcdfe6;
+        border-radius: 50%;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transform: translateX(100%) translateY(50%);
+        width: 6px;
+        height: 6px;
+        border: 1px solid #dcdfe6;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .filter-option-content {
+    position: relative;
+    width: 100%;
+
+    .filter-item-rule {
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+    }
+
+    .filter-filter-item__add {
+      border-style: dashed;
+      width: 100%;
+    }
+  }
+}

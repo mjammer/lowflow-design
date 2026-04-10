@@ -1,0 +1,14 @@
+.role-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+
+  .role-but-item {
+    border-style: dashed;
+
+    &:hover {
+      border-style: solid;
+    }
+  }
+}
