@@ -1,66 +1,49 @@
+import React, { type CSSProperties } from 'react'
+import * as AntdIcons from '@ant-design/icons'
 import './index.scss'
-import type { CSSProperties, PropType } from 'vue'
 
-export default defineComponent({
-  name: 'SvgIcon',
-  props: {
-    name: {
-      type: String as PropType<string>,
-      required: true
-    },
-    prefix: {
-      type: String as PropType<string>,
-      default: 'icon'
-    },
-    color: {
-      type: String as PropType<string>
-    },
-    size: {
-      type: Number as PropType<number>
-    },
-    className: {
-      type: String as PropType<string>
-    }
-  },
-  setup(props) {
-    const symbolId = computed(() => `#${props.prefix}-${props.name}`)
-    const svgClass = computed(() => [
-      'svg-icon',
-      props.name && props.name.replace('el:', ''),
-      props.className
-    ])
-    const fill = computed(() => (props.color ? props.color : 'currentColor'))
-    const style = computed<CSSProperties>(() => {
-      const { size } = props
-      if (!size) return {}
-      return {
-        fontSize: `${size}px`
-      }
-    })
-    return {
-      symbolId,
-      svgClass,
-      fill,
-      style
-    }
-  },
-  render() {
-    const { $attrs, symbolId, svgClass, fill } = this
-    if (this.name) {
-      if (this.name.startsWith('el:')) {
-        return (
-          <el-icon class={svgClass} color={this.color} size={this.size} {...$attrs}>
-            {h(resolveComponent(this.name.slice(3)))}
-          </el-icon>
-        )
-      } else {
-        return (
-          <svg class={svgClass} style={this.style} aria-hidden="true" {...$attrs}>
-            <use xlinkHref={symbolId} fill={fill}></use>
-          </svg>
-        )
-      }
-    }
-    return null
+interface SvgIconProps {
+  name: string
+  prefix?: string
+  color?: string
+  size?: number
+  className?: string
+}
+
+const antdIconMap: Record<string, React.ComponentType<any>> = AntdIcons as any
+
+const SvgIcon: React.FC<SvgIconProps> = ({ name, prefix = 'icon', color, size, className }) => {
+  const svgClass = ['svg-icon', name?.replace('el:', ''), className].filter(Boolean).join(' ')
+  const style: CSSProperties = {}
+  if (size) {
+    style.fontSize = `${size}px`
   }
-})
+  if (color) {
+    style.color = color
+  }
+
+  if (!name) return null
+
+  // Map Element Plus icon names to Ant Design icon names
+  if (name.startsWith('el:')) {
+    const iconName = name.slice(3)
+    // Try to find the icon in antd icons
+    const mappedName = iconName + 'Outlined'
+    const IconComp = antdIconMap[mappedName] || antdIconMap[iconName]
+    if (IconComp) {
+      return <IconComp style={style} className={svgClass} />
+    }
+    // fallback: render text
+    return <span className={svgClass} style={style}>{iconName}</span>
+  }
+
+  // SVG sprite icon
+  const symbolId = `#${prefix}-${name}`
+  return (
+    <svg className={svgClass} style={style} aria-hidden="true">
+      <use xlinkHref={symbolId} fill={color || 'currentColor'} />
+    </svg>
+  )
+}
+
+export default SvgIcon

@@ -1,44 +1,44 @@
-import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
+import { useEffect, useRef, useCallback } from 'react'
 
-export function useDraggableScroll(containerRef: Ref<HTMLElement | null>) {
-  const isDragging = ref(false)
-  let startX: number, startY: number
-  let scrollLeft: number, scrollTop: number
+export function useDraggableScroll(containerRef: React.RefObject<HTMLElement | null>) {
+  const isDragging = useRef(false)
+  const startX = useRef(0)
+  const startY = useRef(0)
+  const scrollLeft = useRef(0)
+  const scrollTop = useRef(0)
 
-  const onMouseDown = (e: MouseEvent) => {
-    if (!containerRef.value) return
-    isDragging.value = true
-    startX = e.pageX
-    startY = e.pageY
-    scrollLeft = containerRef.value.scrollLeft
-    scrollTop = containerRef.value.scrollTop
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
-  }
+  const onMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current || !containerRef.current) return
+    const deltaX = e.pageX - startX.current
+    const deltaY = e.pageY - startY.current
+    containerRef.current.scrollLeft = scrollLeft.current - deltaX
+    containerRef.current.scrollTop = scrollTop.current - deltaY
+  }, [containerRef])
 
-  const onMouseMove = (e: MouseEvent) => {
-    if (!isDragging.value || !containerRef.value) return
-    const deltaX = e.pageX - startX
-    const deltaY = e.pageY - startY
-    containerRef.value.scrollLeft = scrollLeft - deltaX
-    containerRef.value.scrollTop = scrollTop - deltaY
-  }
-
-  const onMouseUp = () => {
-    isDragging.value = false
+  const onMouseUp = useCallback(() => {
+    isDragging.current = false
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
-  }
+  }, [onMouseMove])
 
-  onMounted(() => {
-    containerRef.value?.addEventListener('mousedown', onMouseDown)
-  })
+  const onMouseDown = useCallback((e: MouseEvent) => {
+    if (!containerRef.current) return
+    isDragging.current = true
+    startX.current = e.pageX
+    startY.current = e.pageY
+    scrollLeft.current = containerRef.current.scrollLeft
+    scrollTop.current = containerRef.current.scrollTop
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  }, [containerRef, onMouseMove, onMouseUp])
 
-  onBeforeUnmount(() => {
-    containerRef.value?.removeEventListener('mousedown', onMouseDown)
-  })
+  useEffect(() => {
+    const el = containerRef.current
+    el?.addEventListener('mousedown', onMouseDown)
+    return () => {
+      el?.removeEventListener('mousedown', onMouseDown)
+    }
+  }, [containerRef, onMouseDown])
 
-  return {
-    isDragging
-  }
+  return { isDragging }
 }

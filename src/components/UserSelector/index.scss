@@ -1,0 +1,14 @@
+.user-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+
+  .user-but-item {
+    border-style: dashed;
+
+    &:hover {
+      border-style: solid;
+    }
+  }
+}

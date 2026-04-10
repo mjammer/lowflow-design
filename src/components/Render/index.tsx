@@ -1,101 +1,93 @@
+import React from 'react'
+import { Input, InputNumber, Select, Radio, Checkbox } from 'antd'
 import { cloneDeep } from 'lodash-es'
 import type { Field } from './type'
-import type { PropType } from 'vue'
+import UserSelector from '@/components/UserSelector'
+import RoleSelector from '@/components/RoleSelector'
 
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: [String, Number, Boolean, Array, Object] as PropType<any>,
-      default: undefined,
-      required: false
-    },
-    field: {
-      type: Object as PropType<Field>,
-      required: true
-    }
-  },
-  emits: ['update:modelValue'],
-  components: {
-    ElInput: defineAsyncComponent(() => import('element-plus/es').then(({ ElInput }) => ElInput)),
-    ElInputNumber: defineAsyncComponent(() =>
-      import('element-plus/es').then(({ ElInputNumber }) => ElInputNumber)
-    ),
-    ElSelect: defineAsyncComponent(() =>
-      import('element-plus/es').then(({ ElSelect }) => ElSelect)
-    ),
-    ElRadio: defineAsyncComponent(() => import('element-plus/es').then(({ ElRadio }) => ElRadio)),
-    ElCheckbox: defineAsyncComponent(() =>
-      import('element-plus/es').then(({ ElCheckbox }) => ElCheckbox)
-    ),
-    UserSelector: defineAsyncComponent(() => import('@/components/UserSelector/index.vue')),
-    RoleSelector: defineAsyncComponent(() => import('@/components/RoleSelector/index.vue'))
-  },
-  setup(props, { emit }) {
-    /**
-     * 构建属性参数
-     * @param fieldClone
-     */
-    const buildProps = (fieldClone: Field) => {
-      const dataObject: Record<string, any> = {}
-      const _props = fieldClone.props || {}
-      Object.keys(_props).forEach((key) => {
-        dataObject[key] = _props[key]
-      })
-      if (props.modelValue !== undefined) {
-        dataObject.modelValue = props.modelValue
-      } else {
-        dataObject.modelValue = fieldClone.value
-      }
-      dataObject['onUpdate:modelValue'] = (value: any) => {
-        emit('update:modelValue', value)
-      }
-      delete dataObject.options
-      return dataObject
-    }
-    /**
-     * 构建插槽
-     * @param fieldClone
-     */
-    const buildSlots = (fieldClone: Field) => {
-      const children: Record<string, any> = {}
-      const slotFunctions: Record<string, any> = {
-        ElSelect: (conf: Field) => {
-          return conf.props.options.map((item: any) => {
-            return <el-option label={item.label} value={item.value}></el-option>
-          })
-        },
-        ElRadio: (conf: Field) => {
-          return conf.props.options.map((item: any) => {
-            return <el-radio label={item.value}>{item.label}</el-radio>
-          })
-        },
-        ElCheckbox: (conf: Field) => {
-          return conf.props.options.map((item: any) => {
-            return <el-checkbox label={item.value}>{item.label}</el-checkbox>
-          })
-        }
-      }
-      const slotFunction = slotFunctions[fieldClone.name]
-      if (slotFunction) {
-        children.default = () => {
-          return slotFunction(fieldClone)
-        }
-      }
-      return children
-    }
-    return {
-      buildProps,
-      buildSlots
-    }
-  },
-  render() {
-    const fieldClone: Field = cloneDeep(this.field)
-    const slots = this.buildSlots(fieldClone)
-    const props = this.buildProps(fieldClone)
-    const eleComponent = resolveComponent(fieldClone.name)
-    if (typeof eleComponent === 'string') {
-      return h(eleComponent, props, slots)
-    }
-    return h(eleComponent, props, slots)
+interface RenderProps {
+  value?: any
+  onChange?: (value: any) => void
+  field: Field
+}
+
+const componentMap: Record<string, React.ComponentType<any>> = {
+  ElInput: Input,
+  ElInputNumber: InputNumber,
+  ElSelect: Select,
+  ElRadio: Radio.Group,
+  ElCheckbox: Checkbox.Group,
+  UserSelector: UserSelector,
+  RoleSelector: RoleSelector
+}
+
+const Render: React.FC<RenderProps> = ({ value, onChange, field }) => {
+  const fieldClone = cloneDeep(field)
+  const Component = componentMap[fieldClone.name]
+
+  if (!Component) {
+    return <span>{fieldClone.name}</span>
   }
-})
+
+  const fieldProps = { ...(fieldClone.props || {}) }
+  delete fieldProps.options
+
+  // Build common props
+  const commonProps: Record<string, any> = {
+    ...fieldProps,
+    value: value !== undefined ? value : fieldClone.value,
+    onChange: (val: any) => {
+      // antd components pass event or value directly
+      const newVal = val?.target ? val.target.value : val
+      onChange?.(newVal)
+    }
+  }
+
+  // Handle textarea type for Input
+  if (fieldClone.name === 'ElInput' && fieldClone.props?.type === 'textarea') {
+    return <Input.TextArea {...commonProps} rows={fieldClone.props?.autosize?.minRows || 3} />
+  }
+
+  // Handle Select with options
+  if (fieldClone.name === 'ElSelect' && fieldClone.props?.options) {
+    return (
+      <Select {...commonProps} style={fieldClone.props?.style}>
+        {fieldClone.props.options.map((item: any) => (
+          <Select.Option key={item.value} value={item.value}>
+            {item.label}
+          </Select.Option>
+        ))}
+      </Select>
+    )
+  }
+
+  // Handle Radio with options
+  if (fieldClone.name === 'ElRadio' && fieldClone.props?.options) {
+    return (
+      <Radio.Group {...commonProps}>
+        {fieldClone.props.options.map((item: any) => (
+          <Radio key={item.value} value={item.value}>
+            {item.label}
+          </Radio>
+        ))}
+      </Radio.Group>
+    )
+  }
+
+  // Handle Checkbox with options
+  if (fieldClone.name === 'ElCheckbox' && fieldClone.props?.options) {
+    return (
+      <Checkbox.Group {...commonProps}>
+        {fieldClone.props.options.map((item: any) => (
+          <Checkbox key={item.value} value={item.value}>
+            {item.label}
+          </Checkbox>
+        ))}
+      </Checkbox.Group>
+    )
+  }
+
+  return <Component {...commonProps} />
+}
+
+export default Render

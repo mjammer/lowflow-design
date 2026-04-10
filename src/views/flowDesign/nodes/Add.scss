@@ -1,0 +1,65 @@
+.node-select-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 300px;
+}
+
+.node-select {
+  cursor: pointer;
+  display: flex;
+  padding: 8px;
+  width: 135px;
+  border-radius: 10px;
+  position: relative;
+  background-color: #f5f5f5;
+  align-items: center;
+
+  &:hover {
+    background-color: #e6f4ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    color: #1677ff;
+  }
+
+  .svg-icon-wrap {
+    font-size: 25px;
+    padding: 5px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.Stamp { background-color: #ff943e; }
+    &.Promotion { background-color: #3296fa; }
+    &.Share { background-color: #45cf9b; }
+    &.Timer { background-color: #e872b7; }
+    &.BellFilled { background-color: #95d475; }
+    &.Tools { background-color: #ffc107; }
+  }
+
+  .ant-typography {
+    margin-left: 10px;
+  }
+}
+
+.add-but {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 20px 0 32px;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 1px;
+    height: 100%;
+    background-color: #dcdfe6;
+  }
+}

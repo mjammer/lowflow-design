@@ -1,0 +1,41 @@
+.designer-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: var(--flow-bg-color, #f5f5f5);
+  cursor: default;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  .zoom {
+    position: fixed;
+    z-index: 999;
+    top: 30px;
+    right: 40px;
+
+    span {
+      margin: 0 10px;
+    }
+  }
+
+  .tool {
+    position: fixed;
+    z-index: 999;
+    top: 5px;
+    left: 5px;
+    display: flex;
+    gap: 5px;
+  }
+
+  .node-container {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+}
