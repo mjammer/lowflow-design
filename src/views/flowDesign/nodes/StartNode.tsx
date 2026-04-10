@@ -10,7 +10,7 @@ interface StartNodeProps {
 }
 
 const StartNode: React.FC<StartNodeProps> = ({ node }) => {
-  const { nodesError, setNodesError, addNode, delNode, openPanel } = useFlowDesign()
+  const { setNodesError, addNode, delNode, openPanel } = useFlowDesign()
 
   useEffect(() => {
     const errors: ErrorInfo[] = []
