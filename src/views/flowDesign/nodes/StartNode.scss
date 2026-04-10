@@ -1,0 +1,9 @@
+.start-node {
+  padding-top: 50px;
+
+  .node-box {
+    &:after {
+      display: none;
+    }
+  }
+}

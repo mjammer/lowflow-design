@@ -10,7 +10,7 @@ interface SvgIconProps {
   className?: string
 }
 
-const antdIconMap: Record<string, React.ComponentType> = AntdIcons as any
+const antdIconMap: Record<string, React.ComponentType<any>> = AntdIcons as any
 
 const SvgIcon: React.FC<SvgIconProps> = ({ name, prefix = 'icon', color, size, className }) => {
   const svgClass = ['svg-icon', name?.replace('el:', ''), className].filter(Boolean).join(' ')

@@ -1,0 +1,27 @@
+.end-node-box {
+  position: relative;
+  padding-bottom: 50px;
+
+  .end-node-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #dcdfe6;
+    margin: auto auto 5px;
+  }
+
+  .end-node {
+    position: relative;
+    background: #f0f0f0;
+    padding: 7px 20px;
+    border-radius: 24px;
+    cursor: pointer;
+    overflow: visible;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      box-shadow: 0 0 5px 0 #1677ff;
+    }
+  }
+}
